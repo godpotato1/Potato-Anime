@@ -1,1 +1,355 @@
-
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potato Anime</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-start: #1f1f2e;
+      --bg-end: #121217;
+      --card-bg: #2a2a3e;
+      --modal-bg: rgba(40,40,60,0.85);
+      --accent: #ffcc00;
+      --text-main: #f0f0f5;
+      --text-muted: #b0b0bf;
+      --shadow: rgba(0,0,0,0.5);
+      --radius: 16px;
+      --input-bg: #333437;
+      --btn-hover: rgba(255,204,0,0.8);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: linear-gradient(145deg, var(--bg-start), var(--bg-end));
+      color: var(--text-main);
+      height: 100vh; overflow: hidden;
+      display: flex; flex-direction: column;
+      line-height: 1.6;
+    }
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(30,30,50,0.8); backdrop-filter: blur(10px);
+      color: var(--accent);
+      padding: 1rem 2rem; text-align: center;
+      font-size: 1.6rem; font-weight: 700;
+      box-shadow: 0 2px 8px var(--shadow);
+      z-index: 100; transition: top 0.3s;
+    }
+    .hamburger {
+      position: fixed; top: 1rem; right: 1.5rem;
+      width: 28px; height: 20px; display: flex;
+      flex-direction: column; justify-content: space-between;
+      cursor: pointer; z-index: 150;
+    }
+    .hamburger span {
+      height: 3px; background: var(--accent); border-radius: 3px;
+    }
+    /* Sidebar */
+    #sidebar {
+      position: fixed; top: 0; right: -300px;
+      width: 300px; height: 100vh;
+      background: rgba(30,30,50,0.9); backdrop-filter: blur(8px);
+      padding: 2rem 1rem; transition: right 0.4s ease;
+      box-shadow: -4px 0 12px var(--shadow); z-index: 140;
+    }
+    #sidebar.open { right: 0; }
+    #sidebar .close-sidebar {
+      background: none; border: none;
+      color: var(--accent); font-size: 1.4rem;
+      cursor: pointer; margin-bottom: 2rem;
+    }
+    #sidebar h3 { color: var(--accent); margin-bottom: 1.5rem; font-size: 1.2rem; }
+    #sidebar ul { list-style: none; }
+    #sidebar ul li { margin: 1rem 0; }
+    #sidebar ul li a {
+      color: var(--text-main); text-decoration: none;
+      display: flex; align-items: center;
+      font-weight: 600; transition: color 0.2s;
+    }
+    #sidebar ul li a i { margin-left: 0.5rem; }
+    #sidebar ul li a:hover { color: var(--accent); }
+    /* Main Content */
+    .content {
+      margin-top: 4rem; flex: 1;
+      overflow-y: auto; padding: 1rem;
+    }
+    .section { margin-bottom: 2rem; }
+    .section-title {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem; padding: 0 0.5rem;
+      font-size: 1.25rem; font-weight: 600; color: var(--accent);
+    }
+    .section-title button {
+      background: var(--accent); border: none;
+      padding: 0.4rem 1rem; border-radius: var(--radius);
+      font-size: 0.9rem; color: var(--bg-end);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .section-title button:hover { background: var(--btn-hover); }
+    .anime-list {
+      display: flex; overflow-x: auto;
+      gap: 1rem; padding: 0 0.5rem;
+    }
+    .anime-card {
+      flex: 0 0 160px; background: var(--card-bg);
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+      cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .anime-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 16px var(--shadow);
+    }
+    .img-wrapper { height: 200px; overflow: hidden; }
+    .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .title {
+      padding: 0.6rem; font-size: 1rem; font-weight: 600;
+      background: rgba(0,0,0,0.2);
+    }
+    .details {
+      padding: 0.4rem; font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.1);
+      line-height: 1.2;
+    }
+    /* Modals */
+    #searchModal, #manageModal {
+      position: fixed; inset: 0;
+      background: var(--modal-bg); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 160;
+    }
+    #searchModal.open, #manageModal.open { display: flex; }
+    /* Search Modal */
+    #searchModal input {
+      width: 90%; max-width: 500px;
+      padding: 0.8rem 1rem; font-size: 1rem;
+      border: none; border-radius: 8px;
+      background: var(--bg-start); color: var(--text-main);
+      margin-bottom: 1rem; outline: none;
+    }
+    #searchResults {
+      width: 90%; max-width: 500px;
+      background: var(--bg-start); border-radius: 8px;
+      max-height: 60vh; overflow-y: auto;
+      padding: 0.5rem; box-shadow: 0 2px 8px var(--shadow);
+    }
+    .search-card {
+      display: flex; align-items: center;
+      padding: 0.6rem; border-bottom: 1px solid #333;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .search-card:hover { background: #333; }
+    .search-card img { width: 50px; height: 70px; object-fit: cover; border-radius: 4px; margin-left: 0.8rem; }
+    .search-card .info { font-size: 0.9rem; color: var(--text-muted); }
+    /* Manage Modal */
+    #manageModal .box {
+      background: var(--bg-secondary);
+      padding: 2rem; border-radius: var(--radius);
+      box-shadow: 0 6px 16px var(--shadow);
+      position: relative; animation: fadeInUp 0.4s ease;
+      width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    #manageModal .close-btn {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--accent); color: var(--bg-end);
+      border: none; padding: 0.4rem 0.6rem;
+      border-radius: var(--radius); cursor: pointer;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: background 0.2s;
+    }
+    #manageModal .close-btn:hover { background: var(--btn-hover); }
+    .modal-group { margin-bottom: 1.5rem; position: relative; }
+    .modal-group label { display: block; margin-bottom: 0.5rem; color: var(--accent); font-weight: 600; }
+    .modal-group input, .modal-group select {
+      width: 100%; padding: 0.8rem 1rem; border: none; border-radius: var(--radius);
+      background: var(--input-bg); color: var(--text-main); font-size: 0.9rem;
+      outline: none; transition: box-shadow 0.2s;
+    }
+    .modal-group input:focus, .modal-group select:focus { box-shadow: 0 0 0 3px var(--accent); }
+    .modal-group i { position: absolute; top: 50%; right: 1rem; transform: translateY(-50%); color: var(--accent); pointer-events: none; }
+    .preview-img { width: 100%; margin-top: 1rem; border-radius: var(--radius); max-height: 220px; object-fit: cover; border: 1px solid #444; }
+    .modal-tabs { display: flex; margin-bottom: 2rem; background: var(--input-bg); border-radius: var(--radius); overflow: hidden; }
+    .modal-tabs button { flex: 1; padding: 0.8rem; border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .modal-tabs button.active, .modal-tabs button:hover { background: var(--accent); color: var(--bg-end); }
+    .add-btn, .delete-btn { width: 100%; padding: 0.8rem; background: var(--accent); border: none; border-radius: var(--radius); font-weight: 600; color: var(--bg-end); font-size: 1rem; cursor: pointer; margin-top: 1.2rem; transition: background 0.2s; }
+    .add-btn:hover, .delete-btn:hover { background: var(--btn-hover); }
+    #mSection { margin-bottom: 1.5rem; }
+    .delete-list { max-height: 240px; overflow-y: auto; margin-top: 1rem; }
+    .delete-list div { padding: 0.8rem; cursor: pointer; transition: background 0.2s; border-radius: 8px; color: var(--text-main); margin-bottom: 0.5rem; }
+    .delete-list div:hover { background: #333; }
+    /* Nav & Manager */
+    .manage-link { position: fixed; bottom: 4rem; left: 1rem; background: #e91e63; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px var(--shadow); z-index: 160; display: none; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(30,30,50,0.9); backdrop-filter: blur(6px); display: flex; justify-content: space-around; padding: 1rem 0; box-shadow: 0 -2px 6px var(--shadow); z-index: 120; }
+    nav button { background: none; border: none; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: color 0.2s, transform 0.2s; }
+    nav button:hover { color: var(--accent); transform: scale(1.1); }
+    nav button.active { color: var(--accent); }
+    nav button i { font-size: 1.3rem; margin-bottom: 0.2rem; }
+    @media(max-width:600px){ .anime-card{flex:0 0 120px;} .img-wrapper{height:150px;} }
+  </style>
+</head>
+<body>
+  <header onclick="location.href='index.html'">🍟 Potato Anime</header>
+  <div class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+  <div id="sidebar">
+    <button class="close-sidebar" onclick="toggleSidebar()">✖️</button>
+    <h3>منوی سریع</h3>
+    <ul>
+      <li><a href="about.html"><i class="fas fa-info-circle"></i> درباره ما</a></li>
+      <li><a href="contact.html"><i class="fas fa-envelope"></i> تماس با ما</a></li>
+      <li><a href="settings.html"><i class="fas fa-cog"></i> تنظیمات</a></li>
+    </ul>
+  </div>
+  <div id="searchModal">
+    <input id="searchInput" type="text" placeholder="🔍 جست‌وجوی انیمه..." oninput="performSearch()">
+    <div id="searchResults"></div>
+    <button class="close-btn" onclick="closeSearchModal()">✖️ بستن</button>
+  </div>
+  <div id="manageModal">
+    <div class="box">
+      <button class="close-btn" onclick="closeManageModal()">✖️ انصراف</button>
+      <h3>مدیریت انیمه‌ها</h3>
+      <div class="modal-group">
+        <label><i class="fas fa-layer-group"></i> بخش</label>
+        <select id="mSection">
+          <option value="new">جدیدترین</option>
+          <option value="recommend">پیشنهاد</option>
+          <option value="popular">پربازدید</option>
+        </select>
+      </div>
+      <div class="modal-tabs">
+        <button id="tabAdd" class="active">➕ افزودن</button>
+        <button id="tabDel">➖ حذف</button>
+      </div>
+      <div id="paneAdd">
+        <div class="modal-group"><label><i class="fas fa-heading"></i> عنوان</label><input id="mTitle" placeholder="مثال: One Piece"></div>
+        <div class="modal-group"><label><i class="fas fa-image"></i> آدرس عکس (URL)</label><input id="mImg" placeholder="https://...jpg" oninput="document.getElementById('imgPreview').src=this.value||'https://via.placeholder.com/300x200?text=Preview'"><img id="imgPreview" class="preview-img" src="https://via.placeholder.com/300x200?text=Preview"></div>
+        <div class="modal-group"><label><i class="fas fa-link"></i> لینک صفحه</label><input id="mLink" placeholder="one_piece.html"></div>
+        <div class="modal-group"><label><i class="fas fa-align-left"></i> توضیحات</label><input id="mDetails" placeholder="ژانر: ماجراجویی"></div>
+        <button id="addAnime" class="add-btn">افزودن انیمه</button>
+      </div>
+      <div id="paneDel" style="display:none;">
+        <div class="modal-group"><label><i class="fas fa-search"></i> جست‌وجوی حذف</label><input id="deleteSearch" placeholder="عنوان را جستجو کنید..." oninput="updateDeleteList()"></div>
+        <div id="deleteList" class="delete-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">📌 جدیدترین انیمه‌ها
+        <button onclick="location.href='more-new.html'">بیشتر</button>
+      </div>
+      <div class="anime-list" id="list-new"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">🥔 پیشنهاد خدای سیب‌زمینی
+        <button onclick="location.href='more-recommend.html'">بیشتر</button>
+      </div>
+      <div class="anime-list" id="list-recommend"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">🔥 پربازدیدترین‌ها
+        <button onclick="location.href='more-popular.html'">بیشتر</button>
+      </div>
+      <div class="anime-list" id="list-popular"></div>
+    </div>
+  </div>
+  <div class="manage-link" onclick="openManageModal()">⚙️ مدیریت</div>
+  <nav>
+    <button class="active" onclick="location.href='index.html'"><i class="fas fa-home"></i>خانه</button>
+    <button onclick="openSearchModal()"><i class="fas fa-search"></i>جست‌وجو</button>
+    <button id="loginBtn"><i class="fas fa-user-lock"></i>ورود مدیر</button>
+    <button id="logoutBtn" style="display:none;"><i class="fas fa-power-off"></i>خروج مدیر</button>
+  </nav>
+  <script>
+    // Manager state
+    const adminPass = 'admin123';
+    function updateManagerUI() {
+      const isAdmin = localStorage.getItem('isAdmin') === 'true';
+      document.getElementById('loginBtn').style.display = isAdmin ? 'none' : 'block';
+      document.getElementById('logoutBtn').style.display = isAdmin ? 'block' : 'none';
+      document.querySelector('.manage-link').style.display = isAdmin ? 'block' : 'none';
+    }
+    document.getElementById('loginBtn').onclick = () => {
+      const pwd = prompt('رمز مدیر را وارد کنید:');
+      if (pwd === adminPass) {
+        localStorage.setItem('isAdmin', 'true');
+        updateManagerUI();
+      } else { alert('رمز اشتباه است'); }
+    };
+    document.getElementById('logoutBtn').onclick = () => {
+      localStorage.removeItem('isAdmin');
+      updateManagerUI();
+      closeManageModal();
+    };
+    // Data init
+    let sections = JSON.parse(localStorage.getItem('sections'));
+    if (!sections) sections = { new: [], recommend: [], popular: [] };
+    function saveSections() { localStorage.setItem('sections', JSON.stringify(sections)); }
+    function renderList(key,id) {
+      const ctr = document.getElementById(id); ctr.innerHTML = '';
+      sections[key].forEach(item => {
+        const card = document.createElement('div'); card.className = 'anime-card';
+        card.onclick = () => location.href = item.link;
+        card.innerHTML = `<div class="img-wrapper"><img src="${item.img}" alt="${item.title}"></div><div class="title">${item.title}</div><div class="details">${item.details}</div>`;
+        ctr.appendChild(card);
+      });
+    }
+    function renderAll() {
+      ['new','recommend','popular'].forEach(sec => renderList(sec, 'list-'+sec));
+      saveSections();
+    }
+    renderAll();
+    // Sidebar
+    function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+    // Search Modal
+    function openSearchModal(){ document.getElementById('searchModal').classList.add('open'); document.getElementById('searchInput').focus(); performSearch(); }
+    function closeSearchModal(){ document.getElementById('searchModal').classList.remove('open'); }
+    function performSearch(){
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      let res = [];
+      Object.values(sections).forEach(arr => arr.forEach(i => { if (i.title.toLowerCase().includes(q)) res.push(i); }));
+      const c = document.getElementById('searchResults');
+      c.innerHTML = res.map(i => `<div class="search-card" onclick="location.href='${i.link}'"><img src="${i.img}" alt="${i.title}"><div class="info"><div>${i.title}</div><div style="font-size:.8rem;color:var(--text-muted)">${i.details}</div></div></div>`).join('') || '<div style="padding:.6rem;color:var(--text-muted)">موردی پیدا نشد</div>';
+    }
+    // Manage Modal
+    function openManageModal(){ document.getElementById('manageModal').classList.add('open'); updateDeleteList(); }
+    function closeManageModal(){ document.getElementById('manageModal').classList.remove('open'); }
+    document.getElementById('tabAdd').onclick = () => { document.getElementById('paneAdd').style.display = 'block'; document.getElementById('paneDel').style.display = 'none'; document.getElementById('tabAdd').classList.add('active'); document.getElementById('tabDel').classList.remove('active'); };
+    document.getElementById('tabDel').onclick = () => { document.getElementById('paneDel').style.display = 'block'; document.getElementById('paneAdd').style.display = 'none'; document.getElementById('tabDel').classList.add('active'); document.getElementById('tabAdd').classList.remove('active'); updateDeleteList(); };
+    document.getElementById('addAnime').onclick = () => {
+      const sec = document.getElementById('mSection').value;
+      const t = document.getElementById('mTitle').value.trim();
+      const img = document.getElementById('mImg').value.trim();
+      const link = document.getElementById('mLink').value.trim();
+      const det = document.getElementById('mDetails').value.trim();
+      if (t && img && link && det) {
+        sections[sec].push({ title:t, img, link, details:det });
+        renderList(sec, 'list-'+sec); saveSections();
+        ['mTitle','mImg','mLink','mDetails'].forEach(id => document.getElementById(id).value='');
+        document.getElementById('imgPreview').src = 'https://via.placeholder.com/300x200?text=Preview';
+        closeManageModal();
+      }
+    };
+    function updateDeleteList(){
+      const sec = document.getElementById('mSection').value;
+      const q = document.getElementById('deleteSearch').value.trim().toLowerCase();
+      const list = document.getElementById('deleteList'); list.innerHTML = '';
+      sections[sec].forEach((it, idx) => {
+        if (!q || it.title.toLowerCase().includes(q)) {
+          const d = document.createElement('div'); d.textContent = it.title;
+          d.onclick = () => { sections[sec].splice(idx,1); renderList(sec,'list-'+sec); saveSections(); updateDeleteList(); };
+          list.appendChild(d);
+        }
+      });
+    }
+    // Header hide on scroll
+    let last=0; document.querySelector('.content').addEventListener('scroll', e => { const c=e.target.scrollTop; document.querySelector('header').style.top = c>last?'-70px':'0'; last=c; });
+    // Init UI
+    updateManagerUI();
+  </script>
+</body>
+</html>
