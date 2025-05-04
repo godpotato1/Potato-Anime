@@ -161,7 +161,15 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    const firebaseConfig = { apiKey:"AIza...", authDomain:"...", projectId:"..." };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOHY2sqnWzb_wn9HZtTRiov-BW0z1nGBs",
+      authDomain: "potatoanime-39d7e.firebaseapp.com",
+      projectId: "potatoanime-39d7e",
+      storageBucket: "potatoanime-39d7e.appspot.com",
+      messagingSenderId: "625844082207",
+      appId: "1:625844082207:web:239f1e6782da52ec3e272a",
+      measurementId: "G-ESZLS6CJT0"
+    };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const adminPassword="admin123";
