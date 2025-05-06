@@ -123,7 +123,6 @@
       position:fixed; bottom:0; left:0; right:0;
       font-size:0.8rem;
     }
-    footer a { color:var(--accent); }
   </style>
 </head>
 <body>
@@ -221,17 +220,17 @@
       async function loadCards() {
         const sections=['trending','new','playlist'];
         for(const sec of sections){
-          let { data } = await sb.from('cards').select('*').eq('section',sec).order('id',{ascending:false});
-          const grid=document.getElementById(`${sec}-grid`);
-          data.forEach(c=>grid.insertAdjacentHTML('beforeend',cardHTML(c)));
+          let { data } = await sb.from('PotatoAnime').select('*').eq('section',sec).order('id',{ascending:false});
+          const grid = document.getElementById(`${sec}-grid`);
+          if(grid && data) data.forEach(c=>grid.insertAdjacentHTML('beforeend',cardHTML(c)));
         }
       }
       function cardHTML(c){
         return `<a href="${c.link}" target="_blank"><div class="anime-card"><img src="${c.image_url}" alt="${c.title}"><div class="anime-info"><h3>${c.title}</h3><p>${c.description}</p></div></div></a>`;
       }
-      addBtn.addEventListener('click',async()=>{
-        const newCard={ section:sectionSelect.value, title:titleInput.value, description:descInput.value, image_url:imgInput.value, link:linkInput.value};
-        const { data, error }=await sb.from('cards').insert(newCard).single();
+      addBtn.addEventListener('click', async()=>{
+        const newCard = { section: sectionSelect.value, title: titleInput.value, description: descInput.value, image_url: imgInput.value, link: linkInput.value};
+        const { data, error } = await sb.from('PotatoAnime').insert(newCard).single();
         if(!error){ document.getElementById(`${newCard.section}-grid`).insertAdjacentHTML('afterbegin',cardHTML(data)); titleInput.value=descInput.value=imgInput.value=linkInput.value=''; }
         else alert('خطا در افزودن کارت');
       });
