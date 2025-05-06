@@ -1,37 +1,36 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جزئیات انیمه</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@1.0.0/dist/Vazirmatn.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@1.0.0/dist/Vazirmatn.css">
   <style>
     :root { --bg-dark:#121212; --text-light:#e0e0e0; --accent:#ff4757; --blur:12px; --font:'Vazirmatn',sans-serif; }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:var(--font); background:var(--bg-dark); color:var(--text-light); direction:rtl; }
-    header { position:fixed; top:0; left:0; right:0; background:rgba(18,18,18,0.85); backdrop-filter:blur(var(--blur)); display:flex; justify-content:space-between; align-items:center; padding:1rem; z-index:1000; }
-    header h2 { color:var(--accent); font-size:1.5rem; }
-    #admin-login, #save-btn, #admin-auth, #close-admin { background:var(--accent); color:#fff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer; }
-    #admin-login:hover, #save-btn:hover, #admin-auth:hover, #close-admin:hover { background:#e84850; }
-    .container { padding:5rem 1rem 1rem; max-width:800px; margin:auto; }
-    .cover { width:100%; max-height:400px; object-fit:cover; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
-    h1 { margin:1rem 0; font-size:2rem; }
-    .meta { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem; }
-    .meta span { display:flex; align-items:center; gap:0.5rem; }
-    .genres { display:flex; gap:0.5rem; margin-bottom:1rem; }
-    .genres span { background:var(--accent); padding:0.25rem 0.5rem; border-radius:4px; }
-    .download { margin-bottom:1rem; }
-    .download a { background:var(--accent); color:#fff; padding:0.5rem 1rem; border-radius:4px; text-decoration:none; display:inline-block; }
-    .download a:hover { background:#e84850; }
-    #episodes-section { margin-bottom:1rem; }
-    #episodes-list li { margin-bottom:0.5rem; }
-    #admin-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:none; z-index:999; }
-    #admin-panel { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--bg-dark); padding:1.5rem; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:none; z-index:1000; width:90%; max-width:400px; }
-    #admin-panel h3 { color:var(--accent); margin-bottom:1rem; }
-    #admin-controls label { display:block; margin:0.5rem 0 0.25rem; }
-    #admin-controls input, #admin-controls textarea { width:100%; padding:0.5rem; margin-bottom:0.75rem; border:none; border-radius:4px; font-family:var(--font); }
-    #admin-controls textarea { resize:vertical; min-height:80px; }
-    @media(max-width:600px) { h1 { font-size:1.5rem; } }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--font);background:var(--bg-dark);color:var(--text-light);direction:rtl;line-height:1.6;padding-bottom:4rem}
+    header{position:fixed;top:0;left:0;right:0;background:rgba(18,18,18,0.85);backdrop-filter:blur(var(--blur));display:flex;justify-content:space-between;align-items:center;padding:1rem;z-index:1000}
+    header h2{color:var(--accent);font-size:1.5rem}
+    button{background:var(--accent);color:#fff;border:none;padding:0.5rem 1rem;border-radius:4px;cursor:pointer}
+    button:hover{background:#e84850}
+    .container{padding:5rem 1rem 1rem;max-width:800px;margin:auto}
+    .cover{width:100%;max-height:400px;object-fit:cover;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+    h1{margin:1rem 0;font-size:2rem}
+    .meta{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+    .meta span{display:flex;align-items:center;gap:0.5rem}
+    .genres{display:flex;gap:0.5rem;margin-bottom:1rem}
+    .genres span{background:var(--accent);padding:0.25rem 0.5rem;border-radius:4px}
+    .download{margin-bottom:1rem}
+    .download a{background:var(--accent);color:#fff;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;display:inline-block}
+    .download a:hover{background:#e84850}
+    #episodes-section{margin-bottom:1rem}
+    #episodes-list li{margin-bottom:0.5rem}
+    #admin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;z-index:999}
+    #admin-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-dark);padding:1.5rem;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:none;z-index:1000;width:90%;max-width:400px}
+    #admin-panel h3{color:var(--accent);margin-bottom:1rem}
+    #admin-controls label{display:block;margin:0.5rem 0 0.25rem}
+    #admin-controls input,#admin-controls textarea{width:100%;padding:0.5rem;margin-bottom:0.75rem;border:none;border-radius:4px;font-family:var(--font)}
+    #admin-controls textarea{resize:vertical;min-height:80px}
   </style>
 </head>
 <body>
@@ -42,33 +41,33 @@
   <div id="admin-overlay"></div>
   <div id="admin-panel">
     <h3 id="admin-title"></h3>
-    <input type="password" id="admin-pass" placeholder="رمز عبور" />
+    <input type="password" id="admin-pass" placeholder="رمز عبور">
     <button id="admin-auth">ورود</button>
     <div id="admin-controls">
       <label for="slug-input">شناسه (Slug)</label>
-      <input type="text" id="slug-input" placeholder="مثال: my-anime" />
+      <input id="slug-input" placeholder="my-anime-slug">
       <label for="title-input">عنوان</label>
-      <input type="text" id="title-input" />
+      <input id="title-input">
       <label for="desc-input">توضیحات</label>
       <textarea id="desc-input"></textarea>
       <label for="img-input">آدرس عکس</label>
-      <input type="text" id="img-input" />
+      <input id="img-input">
       <label for="date-input">تاریخ انتشار</label>
-      <input type="date" id="date-input" />
-      <label for="genres-input">ژانرها (با کاما جدا کنید)</label>
-      <input type="text" id="genres-input" />
+      <input type="date" id="date-input">
+      <label for="genres-input">ژانرها (, جدا)</label>
+      <input id="genres-input">
       <label for="rating-input">امتیاز</label>
-      <input type="number" step="0.1" min="0" max="10" id="rating-input" />
+      <input type="number" step="0.1" min="0" max="10" id="rating-input">
       <label for="episodes-input">تعداد قسمت‌ها</label>
-      <input type="number" min="0" id="episodes-input" />
-      <label for="file-input">لینک دانلود فایل کلی</label>
-      <input type="text" id="file-input" placeholder="https://..." />
+      <input type="number" min="0" id="episodes-input">
+      <label for="file-input">لینک دانلود کلی</label>
+      <input id="file-input" placeholder="https://...">
       <button id="save-btn"></button>
       <button id="close-admin">لغو</button>
     </div>
   </div>
   <div class="container">
-    <img id="cover" class="cover" alt="کاور" />
+    <img id="cover" class="cover"> 
     <h1 id="title"></h1>
     <div class="meta">
       <span>📅 <strong>تاریخ انتشار:</strong> <span id="date"></span></span>
@@ -76,7 +75,7 @@
       <span>🎬 <strong>قسمت‌ها:</strong> <span id="episodes"></span></span>
     </div>
     <div id="genres" class="genres"></div>
-    <div class="download"><a id="download-link" download>دانلود فایل انیمه</a></div>
+    <div class="download"><a id="download-link" download>دانلود کلی</a></div>
     <div id="episodes-section">
       <h2>دانلود هر قسمت</h2>
       <ul id="episodes-list"></ul>
@@ -86,133 +85,67 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient('https://mhtkysxhhrtaubakhfmn.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odGt5c3hoaHJ0YXViYWtoZm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjUyNTcsImV4cCI6MjA2MjA0MTI1N30.32077cavlx8PBTp6QOw1PK66RCH3FWlAiSDM39N0VHg');
-    let currentId = null;
-    let newMode = false;
-    // Elements
-    const adminLogin = document.getElementById('admin-login');
-    const overlay = document.getElementById('admin-overlay');
-    const panel = document.getElementById('admin-panel');
-    const adminAuth = document.getElementById('admin-auth');
-    const adminPass = document.getElementById('admin-pass');
-    const controls = document.getElementById('admin-controls');
-    const closeBtn = document.getElementById('close-admin');
-    const saveBtn = document.getElementById('save-btn');
-    const adminTitle = document.getElementById('admin-title');
-    const slugInput = document.getElementById('slug-input');
-    const titleInput = document.getElementById('title-input');
-    const descInput = document.getElementById('desc-input');
-    const imgInput = document.getElementById('img-input');
-    const dateInput = document.getElementById('date-input');
-    const genresInput = document.getElementById('genres-input');
-    const ratingInput = document.getElementById('rating-input');
-    const episodesInput = document.getElementById('episodes-input');
-    const fileInput = document.getElementById('file-input');
-    const coverEl = document.getElementById('cover');
-    const titleEl = document.getElementById('title');
-    const dateEl = document.getElementById('date');
-    const ratingEl = document.getElementById('rating');
-    const episodesEl = document.getElementById('episodes');
-    const genresEl = document.getElementById('genres');
-    const descriptionEl = document.getElementById('description');
-    const downloadLink = document.getElementById('download-link');
-    const episodesList = document.getElementById('episodes-list');
-    // Handlers
-    adminLogin.addEventListener('click', () => {
-      overlay.style.display = 'block'; panel.style.display = 'block'; controls.style.display = 'none';
-      adminAuth.style.display = 'block'; adminPass.style.display = 'block';
-    });
-    closeBtn.addEventListener('click', closeAdmin);
-    overlay.addEventListener('click', closeAdmin);
-    function closeAdmin() {
-      overlay.style.display = 'none'; panel.style.display = 'none';
-    }
-    adminAuth.addEventListener('click', () => {
-      if (adminPass.value === 'admin123') {
-        controls.style.display = 'block'; adminAuth.style.display = 'none'; adminPass.style.display = 'none';
-        prepareForm();
-      } else alert('رمز اشتباه است');
-    });
-    async function loadAnime() {
-      const parts = window.location.pathname.split('/').filter(x => x);
-      const key = parts[parts.length - 1];
+    let currentId=null, newMode=false;
+    const adminLogin=document.getElementById('admin-login'), overlay=document.getElementById('admin-overlay'), panel=document.getElementById('admin-panel'), adminAuth=document.getElementById('admin-auth'), adminPass=document.getElementById('admin-pass'), controls=document.getElementById('admin-controls'), closeBtn=document.getElementById('close-admin'), saveBtn=document.getElementById('save-btn'), adminTitle=document.getElementById('admin-title');
+    const slugInput=document.getElementById('slug-input'), titleInput=document.getElementById('title-input'), descInput=document.getElementById('desc-input'), imgInput=document.getElementById('img-input'), dateInput=document.getElementById('date-input'), genresInput=document.getElementById('genres-input'), ratingInput=document.getElementById('rating-input'), episodesInput=document.getElementById('episodes-input'), fileInput=document.getElementById('file-input');
+    const coverEl=document.getElementById('cover'), titleEl=document.getElementById('title'), dateEl=document.getElementById('date'), ratingEl=document.getElementById('rating'), episodesEl=document.getElementById('episodes'), genresEl=document.getElementById('genres'), descriptionEl=document.getElementById('description'), downloadLink=document.getElementById('download-link'), episodesList=document.getElementById('episodes-list');
+
+    adminLogin.addEventListener('click',()=>{overlay.style.display='block';panel.style.display='block';controls.style.display='none';adminAuth.style.display='block';adminPass.style.display='block'});
+    closeBtn.addEventListener('click',closeAdmin);overlay.addEventListener('click',closeAdmin);
+    function closeAdmin(){overlay.style.display='none';panel.style.display='none'}
+    adminAuth.addEventListener('click',()=>{if(adminPass.value==='admin123'){controls.style.display='block';adminAuth.style.display='none';adminPass.style.display='none';prepareForm()}else alert('رمز اشتباه است')});
+
+    async function loadAnime(){
+      const parts=window.location.pathname.split('/').filter(p=>p);
+      const key=parts[parts.length-1];
       let res;
-      if (/^\d+$/.test(key)) {
-        newMode = false; currentId = parseInt(key, 10);
-        res = await supabase.from('Anime').select('*').eq('id', currentId).single();
+      if(/^[0-9]+$/.test(key)){
+        newMode=false;currentId=parseInt(key,10);
+        res=await supabase.from('anime').select('*').eq('id',currentId).single();
       } else {
-        newMode = false;
-        res = await supabase.from('Anime').select('*').eq('slug', key).single();
+        newMode=false;
+        res=await supabase.from('anime').select('*').eq('slug',key).single();
       }
-      if (res.error || !res.data) { newMode = true; renderEmpty(); return; }
+      if(res.error||!res.data){newMode=true;renderEmpty();return}
       renderData(res.data);
       loadEpisodes();
     }
-    function renderEmpty() {
-      adminTitle.textContent = 'ایجاد انیمه جدید'; saveBtn.textContent = 'ایجاد';
-      slugInput.disabled = false; slugInput.value = '';
-      titleEl.textContent = 'انیمه پیدا نشد'; coverEl.src = '';
-      dateEl.textContent = 'نامشخص'; ratingEl.textContent = 'نامشخص'; episodesEl.textContent = 'نامشخص';
-      genresEl.innerHTML = ''; descriptionEl.textContent = '';
-      downloadLink.style.display = 'none'; episodesList.innerHTML = '';
+    function renderEmpty(){
+      adminTitle.textContent='ایجاد انیمه جدید';saveBtn.textContent='ایجاد';slugInput.disabled=false;slugInput.value='';
+      titleEl.textContent='انیمه پیدا نشد';coverEl.src='';dateEl.textContent='نامشخص';ratingEl.textContent='نامشخص';episodesEl.textContent='نامشخص';genresEl.innerHTML='';descriptionEl.textContent='';downloadLink.style.display='none';episodesList.innerHTML='';
     }
-    function renderData(d) {
-      adminTitle.textContent = 'ویرایش انیمه'; saveBtn.textContent = 'ذخیره';
-      slugInput.disabled = true; slugInput.value = d.slug;
-      titleEl.textContent = d.title || '';
-      coverEl.src = d.image_url || '';
-      const dt = new Date(d.release_date);
-      dateEl.textContent = !isNaN(dt) ? dt.toLocaleDateString('fa-IR') : 'نامشخص';
-      ratingEl.textContent = d.rating ?? 'نامشخص';
-      episodesEl.textContent = d.episodes ?? 'نامشخص';
-      genresEl.innerHTML = '';
-      Array.isArray(d.genres) && d.genres.forEach(g => { const sp = document.createElement('span'); sp.textContent = g; genresEl.append(sp); });
-      descriptionEl.textContent = d.description || '';
-      if (d.file_url) { downloadLink.href = d.file_url; downloadLink.style.display = 'inline-block'; } else downloadLink.style.display = 'none';
+    function renderData(d){
+      adminTitle.textContent='ویرایش انیمه';saveBtn.textContent='ذخیره';slugInput.disabled=true;slugInput.value=d.slug;
+      titleEl.textContent=d.title||'';coverEl.src=d.image_url||'';
+      const dt=new Date(d.release_date);dateEl.textContent=!isNaN(dt)?dt.toLocaleDateString('fa-IR'):'نامشخص';
+      ratingEl.textContent=d.rating??'نامشخص';episodesEl.textContent=d.episodes??'نامشخص';
+      genresEl.innerHTML='';Array.isArray(d.genres)&&d.genres.forEach(g=>{let s=document.createElement('span');s.textContent=g;genresEl.append(s)});
+      descriptionEl.textContent=d.description||'';
+      if(d.file_url){downloadLink.href=d.file_url;downloadLink.style.display='inline-block'}else downloadLink.style.display='none';
     }
-    function prepareForm() {
-      titleInput.value = titleEl.textContent; descInput.value = descriptionEl.textContent;
-      imgInput.value = coverEl.src; dateInput.value = '';
-      try { const dt = new Date(dateEl.textContent); dateInput.value = !isNaN(dt) ? dt.toISOString().split('T')[0] : ''; } catch {}
-      genresInput.value = Array.from(genresEl.children).map(sp => sp.textContent).join(',');
-      ratingInput.value = ratingEl.textContent === 'نامشخص' ? '' : ratingEl.textContent;
-      episodesInput.value = episodesEl.textContent === 'نامشخص' ? '' : episodesEl.textContent;
-      fileInput.value = downloadLink.href || '';
+    function prepareForm(){
+      if(newMode)slugInput.disabled=false;
+      titleInput.value=titleEl.textContent;descInput.value=descriptionEl.textContent;imgInput.value=coverEl.src;
+      dateInput.value='';try{const dt=new Date(dateEl.textContent);dateInput.value=!isNaN(dt)?dt.toISOString().split('T')[0]:''}catch{}
+      genresInput.value=Array.from(genresEl.children).map(sp=>sp.textContent).join(',');
+      ratingInput.value=ratingEl.textContent=='نامشخص'?'':ratingEl.textContent;
+      episodesInput.value=episodesEl.textContent=='نامشخص'?'':episodesEl.textContent;
+      fileInput.value=downloadLink.href||'';
     }
-    async function loadEpisodes() {
-      if (!currentId) return;
-      const { data, error } = await supabase.from('Episodes').select('episode_number,title,video_url').eq('anime_id', currentId).order('episode_number');
-      if (error) return;
-      episodesList.innerHTML = '';
-      data.forEach(ep => {
-        const li = document.createElement('li');
-        li.innerHTML = `قسمت ${ep.episode_number} - ${ep.title} <a href="${ep.video_url}" download>دانلود</a>`;
-        episodesList.append(li);
-      });
+    async function loadEpisodes(){
+      if(!currentId)return;
+      const {data,error}=await supabase.from('episodes').select('episode_number,title,video_url').eq('anime_id',currentId).order('episode_number');
+      if(error)return;
+      episodesList.innerHTML='';
+      data.forEach(ep=>{let li=document.createElement('li');li.innerHTML=`قسمت ${ep.episode_number} - ${ep.title} <a href="${ep.video_url}" download>دانلود</a>`;episodesList.append(li)});
     }
-    saveBtn.addEventListener('click', async () => {
-      const payload = {
-        slug: slugInput.value.trim(),
-        title: titleInput.value.trim(),
-        description: descInput.value.trim(),
-        image_url: imgInput.value.trim() || null,
-        release_date: dateInput.value || null,
-        genres: genresInput.value ? genresInput.value.split(',').map(s => s.trim()) : [],
-        rating: ratingInput.value ? parseFloat(ratingInput.value) : null,
-        episodes: episodesInput.value ? parseInt(episodesInput.value) : null,
-        file_url: fileInput.value.trim() || null
-      };
-      if (newMode) {
-        const { data, error } = await supabase.from('Anime').insert(payload).select().single();
-        if (error) return alert('خطا: ' + error.message);
-        window.location.pathname = '/anime/' + data.slug;
-      } else {
-        const { error } = await supabase.from('Anime').update(payload).eq('id', currentId);
-        if (error) return alert('خطا: ' + error.message);
-        loadAnime();
-      }
+    saveBtn.addEventListener('click',async()=>{
+      const payload={slug:slugInput.value.trim(),title:titleInput.value.trim(),description:descInput.value.trim(),image_url:imgInput.value.trim()||null,release_date:dateInput.value||null,genres:genresInput.value?genresInput.value.split(',').map(s=>s.trim()):[],rating:ratingInput.value?parseFloat(ratingInput.value):null,episodes:episodesInput.value?parseInt(episodesInput.value):null,file_url:fileInput.value.trim()||null};
+      if(newMode){const {data,error}=await supabase.from('anime').insert(payload).select().single();if(error)return alert('خطا:'+error.message);window.location.pathname='/anime/'+data.slug}
+      else{const {error}=await supabase.from('anime').update(payload).eq('id',currentId);if(error)return alert('خطا:'+error.message);loadAnime()}
       closeAdmin();
     });
-    document.addEventListener('DOMContentLoaded', loadAnime);
+    document.addEventListener('DOMContentLoaded',loadAnime);
   </script>
 </body>
 </html>
