@@ -1,242 +1,131 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#121212">
-  <title>پوتیتو انیمه</title>
-  <!-- فونت Vazirmatn -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@1.0.0/dist/Vazirmatn.css">
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Potato Anime</title>
   <style>
-    :root {
-      --bg-dark: #121212;
-      --bg-card: rgba(255,255,255,0.05);
-      --text-light: #e0e0e0;
-      --accent: #ff4757;
-      --blur: 12px;
-      --font-family: 'Vazirmatn', sans-serif;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      font-family: var(--font-family);
-      background: var(--bg-dark);
-      color: var(--text-light);
-      direction: rtl;
-      line-height:1.6;
-      padding-bottom:4rem;
+      background-color: #121212;
+      color: #f5f5f5;
+      font-family: 'Vazirmatn', sans-serif;
+      margin: 0;
+      padding: 0;
     }
-    a { text-decoration:none; color:inherit; }
-    ul { list-style:none; }
+
     header {
-      position:fixed; top:0; left:0; right:0;
-      background: rgba(18,18,18,0.85);
-      backdrop-filter: blur(var(--blur));
-      padding:1rem;
-      display:flex; justify-content:space-between; align-items:center;
-      z-index:1000;
+      background-color: #1f1f1f;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffcc70;
+      border-bottom: 2px solid #333;
     }
-    .logo { font-size:1.6rem; font-weight:bold; color:var(--accent); }
-    nav ul { display:flex; gap:1rem; }
-    nav a {
-      font-size:0.95rem; padding:0.5rem;
-      transition: background 0.3s, color 0.3s;
-      border-radius:4px;
+
+    .section {
+      padding: 1rem;
     }
-    nav a:hover { background:rgba(255,255,255,0.1); color:var(--accent); }
-    #admin-login {
-      font-size:0.9rem; background:var(--accent);
-      color:#fff; border:none;
-      padding:0.5rem 0.75rem; border-radius:4px;
-      cursor:pointer; transition:background 0.3s;
+
+    .section h2 {
+      color: #ffa500;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
     }
-    #admin-login:hover { background:#e84850; }
-    .hero {
-      margin-top:4.5rem;
-      background:url('https://via.placeholder.com/800x400') center/cover no-repeat;
-      height:35vh; position:relative;
-      display:flex; align-items:center; justify-content:center;
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
     }
-    .hero::after {
-      content:''; position:absolute; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.6);
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    .hero h1 {
-      position:relative; font-size:2rem; color:var(--text-light);
-      padding:0.5rem 1rem; background:rgba(0,0,0,0.4); border-radius:6px;
+
+    .card:hover {
+      transform: scale(1.05);
     }
-    main { padding:1rem; margin-bottom:2rem; }
-    .section-title {
-      font-size:1.4rem; margin:1.5rem 0 1rem; position:relative;
-      padding-right:0.5rem;
+
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-bottom: 1px solid #333;
     }
-    .section-title::before {
-      content:''; position:absolute; right:0; top:50%;
-      width:4px; height:100%; background:var(--accent);
-      transform:translateY(-50%);
-    }
-    .anime-grid {
-      display:grid; grid-template-columns:repeat(2,1fr);
-      gap:0.75rem;
-    }
-    @media (min-width:600px) {
-      .anime-grid { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
-    }
-    .anime-card {
-      background:var(--bg-card);
-      border-radius:12px; overflow:hidden;
-      backdrop-filter:blur(var(--blur));
-      box-shadow:0 6px 20px rgba(0,0,0,0.4);
-      transition:transform 0.3s;
-    }
-    .anime-card:hover { transform:translateY(-5px) scale(1.03); }
-    .anime-card img { width:100%; display:block; }
-    .anime-info { padding:0.75rem; }
-    .anime-info h3 { font-size:1rem; margin-bottom:0.4rem; color:var(--text-light); }
-    .anime-info p { font-size:0.85rem; color:#bbbbbb; }
-    #admin-overlay {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.7); display:none;
-      z-index:900;
-    }
-    #admin-panel {
-      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background:var(--bg-dark); border:2px solid var(--accent);
-      border-radius:8px; padding:1.5rem;
-      width:90%; max-width:380px;
-      display:none; z-index:1000;
-    }
-    #admin-panel h3 { margin-bottom:1rem; text-align:center; }
-    #admin-panel input, #admin-panel select, #admin-panel button {
-      width:100%; margin:0.5rem 0; padding:0.6rem;
-      border:none; border-radius:4px;
-      font-family:var(--font-family);
-    }
-    #admin-panel button { background:var(--accent); color:#fff; cursor:pointer; transition:background 0.3s; }
-    #admin-panel button:hover { background:#e84850; }
-    #close-admin { background:#555; }
-    footer {
-      text-align:center; padding:1rem;
-      background:rgba(18,18,18,0.85);
-      backdrop-filter:blur(var(--blur));
-      position:fixed; bottom:0; left:0; right:0;
-      font-size:0.8rem;
+
+    .card-title {
+      padding: 0.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #f5f5f5;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">پوتیتو انیمه</div>
-    <div>
-      <button id="admin-login">مدیریت</button>
-      <nav>
-        <ul>
-          <li><a href="#home">خانه</a></li>
-          <li><a href="#trending">محبوب‌ترین</a></li>
-          <li><a href="#new">تازه‌ها</a></li>
-          <li><a href="#playlist">پیشنهاد خدای سیب‌زمینی</a></li>
-          <li><a href="#about">درباره</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
 
-  <div id="admin-overlay"></div>
-  <div id="admin-panel">
-    <h3>پنل مدیر</h3>
-    <input type="password" id="admin-pass" placeholder="رمز عبور">
-    <button id="admin-auth">ورود</button>
-    <div id="admin-controls" style="display:none;">
-      <select id="section-select">
-        <option value="trending">محبوب‌ترین</option>
-        <option value="new">تازه‌ها</option>
-        <option value="playlist">پیشنهاد خدای سیب‌زمینی</option>
-      </select>
-      <input type="text" id="anime-title" placeholder="عنوان">
-      <input type="text" id="anime-desc" placeholder="توضیح کوتاه">
-      <input type="text" id="anime-img" placeholder="آدرس عکس">
-      <input type="text" id="anime-link" placeholder="لینک مقصد">
-      <button id="add-card">افزودن کارت</button>
-      <button id="close-admin">بستن</button>
-    </div>
+  <header>🍟 Potato Anime</header>
+
+  <div class="section" id="trending">
+    <h2>محبوب‌ترین‌ها</h2>
+    <div class="cards" id="trending-cards"></div>
   </div>
 
-  <section class="hero" id="home">
-    <h1>به پوتیتو انیمه خوش آمدید</h1>
-  </section>
+  <div class="section" id="newest">
+    <h2>تازه‌ها</h2>
+    <div class="cards" id="newest-cards"></div>
+  </div>
 
-  <main>
-    <section id="trending">
-      <h2 class="section-title">محبوب‌ترین انیمه‌ها</h2>
-      <div class="anime-grid" id="trending-grid"></div>
-    </section>
-    <section id="new">
-      <h2 class="section-title">تازه‌ها</h2>
-      <div class="anime-grid" id="new-grid"></div>
-    </section>
-    <section id="playlist">
-      <h2 class="section-title">پیشنهاد خدای سیب‌زمینی</h2>
-      <div class="anime-grid" id="playlist-grid"></div>
-    </section>
-    <section id="about">
-      <h2 class="section-title">درباره</h2>
-      <p>پوتیتو انیمه مرجع شما برای جدیدترین اخبار و محبوب‌ترین سریال‌های انیمه است. طراحی تاریک و موبایل‌فرندلی.</p>
-    </section>
-  </main>
+  <div class="section" id="potato-god">
+    <h2>پیشنهاد خدایی سیب زمینی</h2>
+    <div class="cards" id="god-cards"></div>
+  </div>
 
-  <footer>&copy; 2025 پوتیتو انیمه. تمامی حقوق محفوظ است.</footer>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const SUPABASE_URL = 'https://mhtkysxhhrtaubakhfmn.supabase.co';
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odGt5c3hoaHJ0YXViYWtoZm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjUyNTcsImV4cCI6MjA2MjA0MTI1N30.32077cavlx8PBTp6QOw1PK66RCH3FWlAiSDM39N0VHg';
-      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseUrl = 'https://mhtkysxhhrtaubakhfmn.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odGt5c3hoaHJ0YXViYWtoZm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjUyNTcsImV4cCI6MjA2MjA0MTI1N30.32077cavlx8PBTp6QOw1PK66RCH3FWlAiSDM39N0VHg';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-      const adminLogin = document.getElementById('admin-login');
-      const overlay = document.getElementById('admin-overlay');
-      const panel = document.getElementById('admin-panel');
-      const adminAuth = document.getElementById('admin-auth');
-      const adminPass = document.getElementById('admin-pass');
-      const controls = document.getElementById('admin-controls');
-      const closeBtn = document.getElementById('close-admin');
-      const addBtn = document.getElementById('add-card');
-      const sectionSelect = document.getElementById('section-select');
-      const titleInput = document.getElementById('anime-title');
-      const descInput = document.getElementById('anime-desc');
-      const imgInput = document.getElementById('anime-img');
-      const linkInput = document.getElementById('anime-link');
+    async function loadCards(section, containerId) {
+      const { data, error } = await supabase
+        .from('PotatoAnime')
+        .select('*')
+        .eq('section', section)
+        .order('id', { ascending: false });
 
-      adminLogin.addEventListener('click', () => { overlay.style.display='block'; panel.style.display='block'; });
-      overlay.addEventListener('click', closeAdmin);
-      closeBtn.addEventListener('click', closeAdmin);
-      function closeAdmin() {
-        overlay.style.display='none'; panel.style.display='none'; controls.style.display='none'; adminPass.value=''; adminPass.style.display='block'; adminAuth.style.display='block';
+      if (error) {
+        console.error('خطا در دریافت داده:', error.message);
+        return;
       }
-      adminAuth.addEventListener('click', () => {
-        if(adminPass.value==='admin123'){ controls.style.display='block'; adminPass.style.display='none'; adminAuth.style.display='none'; } else alert('رمز اشتباه است');
+
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => {
+          window.open(item.link || '#', '_blank');
+        };
+
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" />
+          <div class="card-title">${item.title}</div>
+        `;
+        container.appendChild(card);
       });
+    }
 
-      async function loadCards() {
-        const sections=['trending','new','playlist'];
-        for(const sec of sections){
-          let { data } = await sb.from('PotatoAnime').select('*').eq('section',sec).order('id',{ascending:false});
-          const grid = document.getElementById(`${sec}-grid`);
-          if(grid && data) data.forEach(c=>grid.insertAdjacentHTML('beforeend',cardHTML(c)));
-        }
-      }
-      function cardHTML(c){
-        return `<a href="${c.link}" target="_blank"><div class="anime-card"><img src="${c.image_url}" alt="${c.title}"><div class="anime-info"><h3>${c.title}</h3><p>${c.description}</p></div></div></a>`;
-      }
-      addBtn.addEventListener('click', async()=>{
-        const newCard = { section: sectionSelect.value, title: titleInput.value, description: descInput.value, image_url: imgInput.value, link: linkInput.value};
-        const { data, error } = await sb.from('PotatoAnime').insert(newCard).single();
-        if(!error){ document.getElementById(`${newCard.section}-grid`).insertAdjacentHTML('afterbegin',cardHTML(data)); titleInput.value=descInput.value=imgInput.value=linkInput.value=''; }
-        else alert('خطا در افزودن کارت');
-      });
-
-      loadCards();
-    });
+    loadCards('trending', 'trending-cards');
+    loadCards('newest', 'newest-cards');
+    loadCards('potato', 'god-cards'); // potato = پیشنهاد خدایی سیب زمینی
   </script>
+
 </body>
 </html>
