@@ -60,6 +60,7 @@
       <input type="number" step="0.1" min="0" max="10" id="rating-input">
       <label for="episodes-input">تعداد قسمت‌ها</label>
       <input type="number" min="0" id="episodes-input">
+      <div id="episode-details"></div>
       <label for="file-input">لینک دانلود کلی</label>
       <input id="file-input" placeholder="https://...">
       <button id="save-btn"></button>
@@ -67,7 +68,7 @@
     </div>
   </div>
   <div class="container">
-    <img id="cover" class="cover"> 
+    <img id="cover" class="cover">
     <h1 id="title"></h1>
     <div class="meta">
       <span>📅 <strong>تاریخ انتشار:</strong> <span id="date"></span></span>
@@ -85,19 +86,51 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient('https://mhtkysxhhrtaubakhfmn.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odGt5c3hoaHJ0YXViYWtoZm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjUyNTcsImV4cCI6MjA2MjA0MTI1N30.32077cavlx8PBTp6QOw1PK66RCH3FWlAiSDM39N0VHg');
-    let currentId=null, newMode=false;
+    let currentId=null, newMode=false, episodeData=[];
+
+    // DOM
     const adminLogin=document.getElementById('admin-login'), overlay=document.getElementById('admin-overlay'), panel=document.getElementById('admin-panel'), adminAuth=document.getElementById('admin-auth'), adminPass=document.getElementById('admin-pass'), controls=document.getElementById('admin-controls'), closeBtn=document.getElementById('close-admin'), saveBtn=document.getElementById('save-btn'), adminTitle=document.getElementById('admin-title');
     const slugInput=document.getElementById('slug-input'), titleInput=document.getElementById('title-input'), descInput=document.getElementById('desc-input'), imgInput=document.getElementById('img-input'), dateInput=document.getElementById('date-input'), genresInput=document.getElementById('genres-input'), ratingInput=document.getElementById('rating-input'), episodesInput=document.getElementById('episodes-input'), fileInput=document.getElementById('file-input');
-    const coverEl=document.getElementById('cover'), titleEl=document.getElementById('title'), dateEl=document.getElementById('date'), ratingEl=document.getElementById('rating'), episodesEl=document.getElementById('episodes'), genresEl=document.getElementById('genres'), descriptionEl=document.getElementById('description'), downloadLink=document.getElementById('download-link'), episodesList=document.getElementById('episodes-list');
+    const coverEl=document.getElementById('cover'), titleEl=document.getElementById('title'), dateEl=document.getElementById('date'), ratingEl=document.getElementById('rating'), episodesEl=document.getElementById('episodes'), genresEl=document.getElementById('genres'), descriptionEl=document.getElementById('description'), downloadLink=document.getElementById('download-link'), episodesList=document.getElementById('episodes-list'), episodeDetails=document.getElementById('episode-details');
 
+    // Admin panel
     adminLogin.addEventListener('click',()=>{overlay.style.display='block';panel.style.display='block';controls.style.display='none';adminAuth.style.display='block';adminPass.style.display='block'});
     closeBtn.addEventListener('click',closeAdmin);overlay.addEventListener('click',closeAdmin);
     function closeAdmin(){overlay.style.display='none';panel.style.display='none'}
     adminAuth.addEventListener('click',()=>{if(adminPass.value==='admin123'){controls.style.display='block';adminAuth.style.display='none';adminPass.style.display='none';prepareForm()}else alert('رمز اشتباه است')});
 
+    // Generate episode inputs
+    function generateEpisodeFields(existing=[]){
+      episodeDetails.innerHTML='';
+      const count=parseInt(episodesInput.value)||0;
+      for(let i=1;i<=count;i++){
+        const div=document.createElement('div');div.style.marginBottom='0.75rem';
+        const tLabel=document.createElement('label');tLabel.textContent='عنوان قسمت '+i;
+        const tInput=document.createElement('input');tInput.type='text';tInput.id=`episode-title-${i}`;tInput.placeholder='عنوان قسمت '+i;
+        const uLabel=document.createElement('label');uLabel.textContent='لینک دانلود قسمت '+i;
+        const uInput=document.createElement('input');uInput.type='text';uInput.id=`episode-url-${i}`;uInput.placeholder='https://...';
+        const found=existing.find(e=>e.episode_number===i)||{};
+        tInput.value=found.title||'';uInput.value=found.video_url||'';
+        div.append(tLabel,tInput,uLabel,uInput);episodeDetails.append(div);
+      }
+    }
+    episodesInput.addEventListener('change',()=>generateEpisodeFields(episodeData));
+
+    // Load episodes list (display only)
+    async function loadEpisodes(){
+      if(!currentId) return;
+      const {data,error}=await supabase.from('episodes').select('episode_number,title,video_url').eq('anime_id',currentId).order('episode_number');
+      if(error) return;
+      episodeData=data||[];
+      // display
+      episodesList.innerHTML='';
+      data.forEach(ep=>{const li=document.createElement('li');li.innerHTML=`قسمت ${ep.episode_number} - ${ep.title} <a href="${ep.video_url}" download>دانلود</a>`;episodesList.append(li)});
+    }
+
+    // Load or New
     async function loadAnime(){
       const parts=window.location.pathname.split('/').filter(p=>p);
-      const key=parts[parts.length-1];
+      const key=parts.pop();
       let res;
       if(/^[0-9]+$/.test(key)){
         newMode=false;currentId=parseInt(key,10);
@@ -108,42 +141,56 @@
       }
       if(res.error||!res.data){newMode=true;renderEmpty();return}
       renderData(res.data);
-      loadEpisodes();
+      await loadEpisodes();
+      generateEpisodeFields(episodeData);
     }
     function renderEmpty(){
       adminTitle.textContent='ایجاد انیمه جدید';saveBtn.textContent='ایجاد';slugInput.disabled=false;slugInput.value='';
-      titleEl.textContent='انیمه پیدا نشد';coverEl.src='';dateEl.textContent='نامشخص';ratingEl.textContent='نامشخص';episodesEl.textContent='نامشخص';genresEl.innerHTML='';descriptionEl.textContent='';downloadLink.style.display='none';episodesList.innerHTML='';
+      titleEl.textContent='انیمه یافت نشد';coverEl.src='';dateEl.textContent='نامشخص';ratingEl.textContent='نامشخص';episodesEl.textContent='نامشخص';genresEl.innerHTML='';descriptionEl.textContent='';downloadLink.style.display='none';episodesList.innerHTML='';episodeDetails.innerHTML='';
     }
     function renderData(d){
       adminTitle.textContent='ویرایش انیمه';saveBtn.textContent='ذخیره';slugInput.disabled=true;slugInput.value=d.slug;
       titleEl.textContent=d.title||'';coverEl.src=d.image_url||'';
       const dt=new Date(d.release_date);dateEl.textContent=!isNaN(dt)?dt.toLocaleDateString('fa-IR'):'نامشخص';
       ratingEl.textContent=d.rating??'نامشخص';episodesEl.textContent=d.episodes??'نامشخص';
-      genresEl.innerHTML='';Array.isArray(d.genres)&&d.genres.forEach(g=>{let s=document.createElement('span');s.textContent=g;genresEl.append(s)});
+      genresEl.innerHTML='';Array.isArray(d.genres)&&d.genres.forEach(g=>{const s=document.createElement('span');s.textContent=g;genresEl.append(s)});
       descriptionEl.textContent=d.description||'';
       if(d.file_url){downloadLink.href=d.file_url;downloadLink.style.display='inline-block'}else downloadLink.style.display='none';
     }
+
     function prepareForm(){
-      if(newMode)slugInput.disabled=false;
       titleInput.value=titleEl.textContent;descInput.value=descriptionEl.textContent;imgInput.value=coverEl.src;
-      dateInput.value='';try{const dt=new Date(dateEl.textContent);dateInput.value=!isNaN(dt)?dt.toISOString().split('T')[0]:''}catch{}
+      try{const dt=new Date(dateEl.textContent);dateInput.value=!isNaN(dt)?dt.toISOString().split('T')[0]:''}catch{};
       genresInput.value=Array.from(genresEl.children).map(sp=>sp.textContent).join(',');
-      ratingInput.value=ratingEl.textContent=='نامشخص'?'':ratingEl.textContent;
-      episodesInput.value=episodesEl.textContent=='نامشخص'?'':episodesEl.textContent;
+      ratingInput.value=ratingEl.textContent==='نامشخص'?'':ratingEl.textContent;
+      episodesInput.value=episodesEl.textContent==='نامشخص'?'':episodesEl.textContent;
       fileInput.value=downloadLink.href||'';
     }
-    async function loadEpisodes(){
-      if(!currentId)return;
-      const {data,error}=await supabase.from('episodes').select('episode_number,title,video_url').eq('anime_id',currentId).order('episode_number');
-      if(error)return;
-      episodesList.innerHTML='';
-      data.forEach(ep=>{let li=document.createElement('li');li.innerHTML=`قسمت ${ep.episode_number} - ${ep.title} <a href="${ep.video_url}" download>دانلود</a>`;episodesList.append(li)});
-    }
+
+    // Save
     saveBtn.addEventListener('click',async()=>{
       const payload={slug:slugInput.value.trim(),title:titleInput.value.trim(),description:descInput.value.trim(),image_url:imgInput.value.trim()||null,release_date:dateInput.value||null,genres:genresInput.value?genresInput.value.split(',').map(s=>s.trim()):[],rating:ratingInput.value?parseFloat(ratingInput.value):null,episodes:episodesInput.value?parseInt(episodesInput.value):null,file_url:fileInput.value.trim()||null};
-      if(newMode){const {data,error}=await supabase.from('anime').insert(payload).select().single();if(error)return alert('خطا:'+error.message);window.location.pathname='/anime/'+data.slug}
-      else{const {error}=await supabase.from('anime').update(payload).eq('id',currentId);if(error)return alert('خطا:'+error.message);loadAnime()}
-      closeAdmin();
+      if(newMode){
+        const {data,error} = await supabase.from('anime').insert(payload).select().single();
+        if(error) return alert('خطا:'+error.message);
+        currentId=data.id; newMode=false;
+      } else {
+        const {error} = await supabase.from('anime').update(payload).eq('id',currentId);
+        if(error) return alert('خطا:'+error.message);
+      }
+      // handle episodes
+      const epCount=parseInt(episodesInput.value)||0;
+      // delete old
+      await supabase.from('episodes').delete().eq('anime_id',currentId);
+      // insert new
+      const epPayload=[];
+      for(let i=1;i<=epCount;i++){
+        const titleVal=document.getElementById(`episode-title-${i}`).value.trim();
+        const urlVal=document.getElementById(`episode-url-${i}`).value.trim()||null;
+        epPayload.push({anime_id:currentId,episode_number:i,title:titleVal,video_url:urlVal});
+      }
+      if(epPayload.length) await supabase.from('episodes').insert(epPayload);
+      closeAdmin(); loadAnime();
     });
     document.addEventListener('DOMContentLoaded',loadAnime);
   </script>
