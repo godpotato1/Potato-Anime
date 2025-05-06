@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>جزئیات انیمه</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@1.0.0/dist/Vazirmatn.css" />
+  <style>
+    :root { --bg-dark:#121212; --bg-card:rgba(255,255,255,0.05); --text-light:#e0e0e0; --accent:#ff4757; --blur:12px; --font:'Vazirmatn',sans-serif; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--font);background:var(--bg-dark);color:var(--text-light);direction:rtl;line-height:1.6;padding-bottom:4rem;}
+    .header{position:fixed;top:0;left:0;right:0;background:rgba(18,18,18,0.85);backdrop-filter:blur(var(--blur));padding:1rem;display:flex;justify-content:space-between;align-items:center;z-index:1000;}
+    .header h2{font-size:1.5rem;color:var(--accent);}
+    #admin-login{background:var(--accent);border:none;color:#fff;padding:0.5rem 0.75rem;border-radius:4px;cursor:pointer;}
+    #admin-login:hover{background:#e84850;}
+    .container{padding:5rem 1rem 1rem;max-width:800px;margin:auto;}
+    .cover{width:100%;max-height:400px;object-fit:cover;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.5);}
+    h1{margin:1rem 0 0.5rem;font-size:2rem;}
+    .meta{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;}
+    .meta span{display:flex;align-items:center;gap:0.5rem;}
+    .genres{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+    .genre{background:var(--accent);padding:0.25rem 0.5rem;border-radius:4px;font-size:0.9rem;}
+    .description{line-height:1.6;margin-bottom:2rem;}
+    #admin-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:999;}
+    #admin-panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-dark);padding:1.5rem;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.5);z-index:1000;width:90%;max-width:400px;}
+    #admin-panel h3{margin-bottom:1rem;color:var(--accent);}
+    #admin-panel label{display:block;margin:0.5rem 0 0.25rem;}
+    #admin-panel input,#admin-panel textarea{width:100%;padding:0.5rem;margin-bottom:0.75rem;border-radius:4px;border:none;font-family:var(--font);}
+    #admin-panel textarea{resize:vertical;min-height:80px;}
+    #admin-panel button{width:100%;padding:0.5rem;background:var(--accent);border:none;color:#fff;border-radius:4px;cursor:pointer;}
+    #admin-panel button:hover{background:#e84850;}
+    @media(max-width:600px){h1{font-size:1.5rem;}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>جزئیات انیمه</h2>
+    <button id="admin-login">مدیریت</button>
+  </div>
+  <div id="admin-overlay"></div>
+  <div id="admin-panel">
+    <h3>ویرایش انیمه</h3>
+    <input type="password" id="admin-pass" placeholder="رمز عبور" />
+    <button id="admin-auth">ورود</button>
+    <div id="admin-controls" style="display:none;">
+      <label for="title-input">عنوان</label><input id="title-input" />
+      <label for="desc-input">توضیحات</label><textarea id="desc-input"></textarea>
+      <label for="img-input">آدرس عکس</label><input id="img-input" />
+      <label for="date-input">تاریخ انتشار</label><input type="date" id="date-input" />
+      <label for="genres-input">ژانرها (با کاما جدا کنید)</label><input id="genres-input" />
+      <label for="rating-input">امتیاز</label><input type="number" step="0.1" min="0" max="10" id="rating-input" />
+      <label for="episodes-input">تعداد قسمت‌ها</label><input type="number" min="0" id="episodes-input" />
+      <button id="save-btn">ذخیره</button>
+      <button id="close-admin">لغو</button>
+    </div>
+  </div>
+  <div class="container">
+    <img id="cover" class="cover" alt="کاور انیمه" />
+    <h1 id="title">...</h1>
+    <div class="meta">
+      <span>📅 <strong>تاریخ انتشار:</strong> <span id="date"></span></span>
+      <span>⭐ <strong>امتیاز:</strong> <span id="rating"></span></span>
+      <span>🎬 <strong>قسمت‌ها:</strong> <span id="episodes"></span></span>
+    </div>
+    <div id="genres" class="genres"></div>
+    <div id="description" class="description"></div>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://mhtkysxhhrtaubakhfmn.supabase.co','YOUR_KEY');
+    let currentId;
+    const adminLogin=document.getElementById('admin-login'),overlay=document.getElementById('admin-overlay'),panel=document.getElementById('admin-panel'),adminAuth=document.getElementById('admin-auth'),adminPass=document.getElementById('admin-pass'),controls=document.getElementById('admin-controls'),closeBtn=document.getElementById('close-admin'),saveBtn=document.getElementById('save-btn');
+    const titleEl=document.getElementById('title'),coverEl=document.getElementById('cover'),dateEl=document.getElementById('date'),ratingEl=document.getElementById('rating'),episodesEl=document.getElementById('episodes'),genresEl=document.getElementById('genres'),descEl=document.getElementById('description');
+    const titleInput=document.getElementById('title-input'),descInput=document.getElementById('desc-input'),imgInput=document.getElementById('img-input'),dateInput=document.getElementById('date-input'),genresInput=document.getElementById('genres-input'),ratingInput=document.getElementById('rating-input'),episodesInput=document.getElementById('episodes-input');
+    adminLogin.addEventListener('click',()=>{overlay.style.display='block';panel.style.display='block';});
+    closeBtn.addEventListener('click',closeAdmin);overlay.addEventListener('click',closeAdmin);
+    function closeAdmin(){overlay.style.display='none';panel.style.display='none';controls.style.display='none';adminPass.value='';adminPass.style.display='block';adminAuth.style.display='block';}
+    adminAuth.addEventListener('click',()=>{if(adminPass.value==='admin123'){controls.style.display='block';adminPass.style.display='none';adminAuth.style.display='none';populateAdmin();}else alert('رمز اشتباه است');});
+    async function loadAnime(){
+      // استخراج id یا slug از آدرس
+      const pathParts=window.location.pathname.split('/').filter(Boolean);
+      const last=pathParts[pathParts.length-1];
+      let query;
+      if(/^[0-9]+$/.test(last)){
+        currentId=parseInt(last,10);
+        query=supabase.from('Anime').select('*').eq('id',currentId).single();
+      } else {
+        const slug=last;
+        query=supabase.from('Anime').select('*').eq('slug',slug).single();
+      }
+      const { data,error }=await query;
+      if(error||!data)return;
+      // رندر داده‌ها
+      coverEl.src=data.image_url||'';
+      titleEl.textContent=data.title||'بدون عنوان';
+      const dt=new Date(data.release_date);
+      dateEl.textContent=!isNaN(dt)?dt.toLocaleDateString('fa-IR'):'نامشخص';
+      ratingEl.textContent=data.rating??'نامشخص';
+      episodesEl.textContent=data.episodes??'نامشخص';
+      genresEl.innerHTML='';
+      if(Array.isArray(data.genres))data.genres.forEach(g=>{const sp=document.createElement('span');sp.className='genre';sp.textContent=g;genresEl.append(sp);});
+      descEl.textContent=data.description||'توضیحی وجود ندارد.';
+    }
+    function populateAdmin(){
+      titleInput.value=titleEl.textContent;
+      descInput.value=descEl.textContent;
+      imgInput.value=coverEl.src;
+      try{const d=new Date(dateEl.textContent);dateInput.value=!isNaN(d)?d.toISOString().split('T')[0]:'';}catch{dateInput.value='';}
+      genresInput.value=Array.from(genresEl.children).map(sp=>sp.textContent).join(',');
+      ratingInput.value=ratingEl.textContent==='نامشخص'?'':ratingEl.textContent;
+      episodesInput.value=episodesEl.textContent==='نامشخص'?'':episodesEl.textContent;
+    }
+    saveBtn.addEventListener('click',async()=>{
+      const upd={title:titleInput.value,description:descInput.value,image_url:imgInput.value,release_date:dateInput.value||null,genres:genresInput.value?genresInput.value.split(',').map(s=>s.trim()):[],rating:ratingInput.value?parseFloat(ratingInput.value):null,episodes:episodesInput.value?parseInt(episodesInput.value):null};
+      const {error}=await supabase.from('Anime').update(upd).eq('id',currentId);
+      if(error)return alert('خطا در ذخیره:'+error.message);
+      // نمایش فوری بدون reload
+      titleEl.textContent=upd.title||'بدون عنوان';
+      descEl.textContent=upd.description||'توضیحی وجود ندارد.';
+      coverEl.src=upd.image_url||'';
+      const d2=new Date(upd.release_date);
+      dateEl.textContent=!isNaN(d2)?d2.toLocaleDateString('fa-IR'):'نامشخص';
+      ratingEl.textContent=upd.rating??'نامشخص';
+      episodesEl.textContent=upd.episodes??'نامشخص';
+      genresEl.innerHTML='';upd.genres.forEach(g=>{const sp=document.createElement('span');sp.className='genre';sp.textContent=g;genresEl.append(sp);});
+      closeAdmin();
+    });
+    document.addEventListener('DOMContentLoaded',loadAnime);
+  </script>
+</body>
+</html>
