@@ -1,0 +1,20 @@
+{
+  "name": "potato-anime",
+  "version": "1.0.0",
+  "description": "A beautiful anime web app integrated with Supabase and Telegram.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.23.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^5.2.0"
+  }
+}
