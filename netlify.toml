@@ -1,0 +1,7 @@
+# netlify.toml
+[[headers]]
+  # برای همه‌ی فایل‌های .js
+  for = "/*.js"
+  [headers.values]
+    # نوع محتوا را به جاوااسکریپت قرار می‌دهیم
+    Content-Type = "application/javascript; charset=UTF-8"
